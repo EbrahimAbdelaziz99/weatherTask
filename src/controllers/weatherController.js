@@ -16,22 +16,35 @@ const getCurrentWeather = async (req, res) => {
         units: "metric",
       },
     });
-    const { name, main, weather, wind } = response.data;
-    res.json({
-      city: name,
-      temperature: main.temp,
-      description: weather[0].description,
-      humidity: main.humidity,
-      windSpeed: wind.speed,
-    });
+
+    const data = {
+      city: response.data.name,
+      temperature: response.data.main.temp,
+      description: response.data.weather[0].description,
+      humidity: response.data.main.humidity,
+      windSpeed: response.data.wind.speed,
+    };
+
+    console.log("city weather data :", data);
+
+    res.json(data);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch current weather" });
+    if (error.response?.status === 404) {
+      res
+        .status(404)
+        .json({ error: "City not found. Please provide a valid city name ." });
+    } else {
+      console.error("Error fetching current weather:", error.message);
+      res.status(500).json({ error: "Failed to fetch current weather" });
+    }
   }
 };
 
 // Get 5-day weather forecast by city
 const get5DayForecast = async (req, res) => {
   const { city } = req.params;
+  console.log("city name :", city);
+
   try {
     const response = await axios.get(`${API_BASE_URL}/forecast`, {
       params: {
@@ -40,6 +53,7 @@ const get5DayForecast = async (req, res) => {
         units: "metric",
       },
     });
+
     const forecastData = response.data.list.reduce((acc, item) => {
       const date = item.dt_txt.split(" ")[0];
       if (!acc[date]) {
@@ -58,9 +72,16 @@ const get5DayForecast = async (req, res) => {
       })
     );
 
+    console.log("forecast data :", formattedForecast);
     res.json(formattedForecast);
   } catch (error) {
-    res.status(500).json({ error: "Failed to fetch 5-day forecast" });
+    console.error(
+      "Error fetching 5-day forecast:",
+      error.response?.data || error.message
+    );
+    res.status(500).json({
+      error: error.response?.data?.message || "Failed to fetch 5-day forecast",
+    });
   }
 };
 
