@@ -32,7 +32,7 @@ const getCurrentWeather = async (req, res) => {
     if (error.response?.status === 404) {
       res
         .status(404)
-        .json({ error: "City not found, Please provide a valid city name ." });
+        .json({ message: "City not found, Please provide a valid city name ." });
     } else {
       console.error("Error fetching current weather:", error.message);
       res.status(500).json({ error: "Failed to fetch current weather" });
@@ -82,12 +82,11 @@ const get5DayForecast = async (req, res) => {
     if (error.response?.status === 404) {
       res
         .status(404)
-        .json({ error: "City not found, Please provide a valid city name ." });
+        .json({ message: "City not found, Please provide a valid city name ." });
     } else {
       res.status(500).json({
         error:
-          error.response?.data?.message +
-          "Failed to fetch 5-day forecast",
+          error.response?.data?.message || "Failed to fetch 5-day forecast",
       });
     }
   }

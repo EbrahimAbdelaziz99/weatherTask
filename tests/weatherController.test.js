@@ -45,7 +45,9 @@ describe("Weather Controller", () => {
       nock(API_BASE_URL)
         .get("/weather")
         .query({ q: "InvalidCity", appid: "test_key", units: "metric" })
-        .reply(404, { message: "city not found" });
+        .reply(404, {
+          message: "City not found, Please provide a valid city name .",
+        });
 
       const response = await request(app).get("/weather/current/InvalidCity");
 
@@ -99,7 +101,9 @@ describe("Weather Controller", () => {
       nock(API_BASE_URL)
         .get("/forecast")
         .query({ q: "InvalidCity", appid: "test_key", units: "metric" })
-        .reply(404, { message: "city not found" });
+        .reply(404, {
+          message: "City not found, Please provide a valid city name .",
+        });
 
       const response = await request(app).get("/weather/forecast/InvalidCity");
 
