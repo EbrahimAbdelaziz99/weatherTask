@@ -31,8 +31,8 @@ A backend service built with Node.js and Express.js that integrates with the Ope
 1. Clone the repository:
 
    ```bash
-   git clone <repository_url>
-   cd <repository_folder>
+   git clone https://github.com/EbrahimAbdelaziz99/weatherTask.git
+   cd weatherTask
    ```
 
 2. Install dependencies:
