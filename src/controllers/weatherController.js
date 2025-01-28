@@ -12,7 +12,7 @@ const getCurrentWeather = async (req, res) => {
   const { city } = req.params;
   console.log("city name :", city);
   console.log(req.originalUrl);
-  let cacheKey = req.originalUrl.split("/")[2] + city;
+  let cacheKey = req.originalUrl.split("/")[2] + city.toLowerCase();
 
   console.log(cacheKey);
 
@@ -56,7 +56,7 @@ const getCurrentWeather = async (req, res) => {
 const get5DayForecast = async (req, res) => {
   const { city } = req.params;
   console.log("city name :", city);
-  let cacheKey = req.originalUrl.split("/")[2] + city;
+  let cacheKey = req.originalUrl.split("/")[2] + city.toLowerCase();
 
   console.log(cacheKey);
   try {

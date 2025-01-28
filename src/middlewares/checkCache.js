@@ -2,7 +2,7 @@ const client = require("../../config/redisClient");
 
 const checkCache = async (req, res, next) => {
   const { city } = req.params;
-  let cacheKey = req.originalUrl.split("/")[2] + city;
+  let cacheKey = req.originalUrl.split("/")[2] + city.toLowerCase();
 
   console.log(cacheKey);
   
