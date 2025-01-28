@@ -3,10 +3,18 @@ const axios = require("axios");
 const API_BASE_URL = "https://api.openweathermap.org/data/2.5";
 const API_KEY = process.env.OPENWEATHER_API_KEY;
 
+const CACHE_TTL = 3600; // Time-to-live for cache (in seconds)
+
+const client = require("../../config/redisClient");
+
 // Get current weather by city
 const getCurrentWeather = async (req, res) => {
   const { city } = req.params;
   console.log("city name :", city);
+  console.log(req.originalUrl);
+  let cacheKey = req.originalUrl.split("/")[2] + city;
+
+  console.log(cacheKey);
 
   try {
     const response = await axios.get(`${API_BASE_URL}/weather`, {
@@ -27,12 +35,16 @@ const getCurrentWeather = async (req, res) => {
 
     console.log("city weather data :", data);
 
+    client.connect();
+    await client.setEx(cacheKey, CACHE_TTL, JSON.stringify(data));
+    client.quit();
+
     res.json(data);
   } catch (error) {
     if (error.response?.status === 404) {
-      res
-        .status(404)
-        .json({ message: "City not found, Please provide a valid city name ." });
+      res.status(404).json({
+        message: "City not found, Please provide a valid city name .",
+      });
     } else {
       console.error("Error fetching current weather:", error.message);
       res.status(500).json({ error: "Failed to fetch current weather" });
@@ -44,7 +56,9 @@ const getCurrentWeather = async (req, res) => {
 const get5DayForecast = async (req, res) => {
   const { city } = req.params;
   console.log("city name :", city);
+  let cacheKey = req.originalUrl.split("/")[2] + city;
 
+  console.log(cacheKey);
   try {
     const response = await axios.get(`${API_BASE_URL}/forecast`, {
       params: {
@@ -73,6 +87,10 @@ const get5DayForecast = async (req, res) => {
     );
 
     console.log("forecast data :", formattedForecast);
+    client.connect();
+    await client.setEx(cacheKey, CACHE_TTL, JSON.stringify(formattedForecast));
+    client.quit();
+
     res.json(formattedForecast);
   } catch (error) {
     console.error(
@@ -80,9 +98,9 @@ const get5DayForecast = async (req, res) => {
       error.response?.data || error.message
     );
     if (error.response?.status === 404) {
-      res
-        .status(404)
-        .json({ message: "City not found, Please provide a valid city name ." });
+      res.status(404).json({
+        message: "City not found, Please provide a valid city name .",
+      });
     } else {
       res.status(500).json({
         error:
