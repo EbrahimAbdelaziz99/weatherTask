@@ -11,8 +11,6 @@ describe("Weather Controller (Real API Calls)", () => {
       const response = await axios.get(
         "http://localhost:3000/weather/current/London"
       );
-      console.log("1", response.data);
-      console.log("1", response.status);
 
       expect(response.status).toBe(200);
       expect(response.data).toHaveProperty("city", "London");
@@ -23,14 +21,16 @@ describe("Weather Controller (Real API Calls)", () => {
     });
 
     it("should return an error for an invalid city", async () => {
-      const response = await axios.get(
-        "http://localhost:3000/weather/current/nflajbnvkhdv"
-      );
-      console.log("2", response.data);
-      console.log("2", response.status);
-
-      expect(response.status).toBe(404); // OpenWeather returns 404 for invalid cities
-      // expect(response.body).toHaveProperty("error");
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/weather/current/nflajbnvkhdv"
+        );
+      } catch (error) {
+        console.log("2", error.response.data);
+        console.log("2", error.status);
+        expect(error.status).toBe(404);
+        expect(error.response.data).toHaveProperty("error");
+      }
     });
   });
 
@@ -39,9 +39,6 @@ describe("Weather Controller (Real API Calls)", () => {
       const response = await axios.get(
         "http://localhost:3000/weather/forecast/paris"
       );
-
-      console.log("3", response.data);
-      console.log("3", response.status);
 
       expect(response.status).toBe(200);
       expect(Array.isArray(response.data)).toBe(true);
@@ -55,15 +52,16 @@ describe("Weather Controller (Real API Calls)", () => {
     });
 
     it("should return an error for an invalid city", async () => {
-      const response = await axios.get(
-        "http://localhost:3000/weather/forecast/nflajbnvkhdv"
-      );
-
-      console.log("4", response.data);
-      console.log("4", response.status);
-
-      expect(response.status).toBe(404); // OpenWeather returns 404 for invalid cities
-      // expect(response.body).toHaveProperty("error");
+      try {
+        const response = await axios.get(
+          "http://localhost:3000/weather/forecast/nflajbnvkhdv"
+        );
+      } catch (error) {
+        console.log("4", error.response.data);
+        console.log("4", error.status);
+        expect(error.status).toBe(404);
+        expect(error.response.data).toHaveProperty("error");
+      }
     });
   });
 });
