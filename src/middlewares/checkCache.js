@@ -5,7 +5,7 @@ const checkCache = async (req, res, next) => {
   let cacheKey = req.originalUrl.split("/")[2] + city.toLowerCase();
 
   console.log(cacheKey);
-  
+
   try {
     client.connect();
     const data = await client.get(cacheKey);
@@ -18,7 +18,10 @@ const checkCache = async (req, res, next) => {
     next();
   } catch (error) {
     console.error("Redis error:", error);
-    next();
+    return res.json({
+      error: "Redis error",
+      message: "An error occurred while checking the cache.",
+    });
   }
 };
 
