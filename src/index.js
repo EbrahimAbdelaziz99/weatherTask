@@ -15,9 +15,10 @@ const limiter = rateLimit({
 });
 
 const weatherRoutes = require("./routes/weatherRoutes.js");
+const checkCache = require("../src/middlewares/checkCache.js");
 
 app.use(limiter);
-app.use("/weather", weatherRoutes);
+app.use("/weather", checkCache, weatherRoutes);
 
 app.all("*", (req, res, next) => {
   next(new Error(`Can't find ${req.originalUrl} on this server!`));
